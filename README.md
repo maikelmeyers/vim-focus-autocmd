@@ -21,11 +21,22 @@ Alternatives
 
 
 Background
--------
+----------
 In my general workflow I use clipboard too often -- having many instances of
 vim, terminals, browsers, etc at once. No matter how little keystrokes you
 need for any simple mappings to copy to and from '+' register, it will always
 be too much. I tried really hard to accustom myself with no success.
+
+
+Installation
+------------
+You know how to use your's plugin manager, so convert it yourself:
+```
+NeoBundle 'amerlyq/vim-focus-autocmd', {
+    \ 'disabled' : !has('unix'),
+    \ 'build': 'res/setup'
+    \ }
+```
 
 
 FAQ

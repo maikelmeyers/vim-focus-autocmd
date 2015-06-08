@@ -1,0 +1,75 @@
+2015-06-04 [X] Autocopying on focus lost/gain
+2015-06-08 [X] Vitality  <F24>/<F25>
+:> Too rigid, can't adapt for all cases. Must rewrite completely.
+	https://github.com/sjl/vitality.vim/blob/master/plugin/vitality.vim
+	>[_] find why mapping in cnoremap such a pain
+
+REF
+	all control sequences
+		http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
+		http://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes
+	Xterm special codes:
+		http://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Mouse-Tracking
+	Vim codes
+		http://vimdoc.sourceforge.net/htmldoc/term.html#t_RV
+
+TERMS
+: http://www.tecmint.com/linux-terminal-emulators/
+	URxvt (perl)
+		http://artisan.karma-lab.net/creer-plugin-urxvt-sauvegarder-vim-automatiquement
+		: <Change sources to implement>: VIM launch will enable notification of mouse
+		: events to the terminal (set mouse = ...). When it will stop, it will
+		: turn off this notification
+		> But how to do it less harmful?
+		: So even bash will not show those sequences and interpret them instead?
+		: Maybe, zsh has built-in ability for focus lost? And I will no need to use urxvt?
+		: Think about how to disable those commands (or make them not harmful) if plugin is absent
+
+		Integrate
+		: For example a common problem when we're working in the console is to copy text
+		: on a remote console (ssh vim) and edit the content locally. By this approach
+		: is feasible by defining a sequence OSC "clipboard" qu'URxvt recover to
+		: transfer the contents into the CLIPBOARD selection of the local X11 server.
+		: Something like:
+		: 	echo -en "\033]777;CLIPBOARD;ON\077Ceci est mon texte à copier\033]777;CLIPBOARD;OFF\077"
+		: Besides, the idea is already a little set up in a little-known plugin urxvt, clipboard-osc.
+
+
+GENERAL
+	2015-06-04 [X] Check if that codes are in spec now  :> Yes (xterm, iTerm2)
+	: FocusIn/FocusOut control sequences, which uses CSI O and CSI I
+		https://github.com/fish-shell/fish-shell/issues/1917
+	| Maybe, create new button in my xkbmap and use it somehow with escape sequences?
+
+BUG
+	2015-06-07 [X] BUG: Focus not triggered -- FocusIn works not always?
+	:= Seems like FocusIn for next vim triggered before FocusOut for previous.
+	:  So next vim always copies previous content of "+ register, instead of new.
+	:> Resolved, adding delay to 'urxvt/ext/focus-term'
+		2015-06-07 [X] two vims on split screen -- copying works only in one direction
+		2015-06-07 [X] two vims on different workspaces -- works FocusOut->+, but not FoucIn for another
+	[_] BUG: returning into vim drops visual selection -- so 'gv' after vnoremap is not enough?
+	2015-06-08 [X] BUG: cursor don't change form in insert.
+	:> urxvt don't have 'vbar' cursor
+
+
+TODO
+	WARNING when opening new terminal ($mod+u) vim is not opened yet, so buffer
+		will not be copied in @"! You must keep yank shortcuts for such cases.
+	[_] TODO: optionaly copy buffers on VimEnter/VimLeavePre also.
+	[_] ADD checking for gvim -- then use guicursor options for color and shape
+	[_] CHECK: focus codes for another terminal emulators -- see their specs
+		: check default codes for urxvt too
+	[_] WARNING: when opening vim in tmux through ssh -- check dst terminal,
+		  and probably disable my plugin
+	[_] Tmux
+		Must additionally send it's own events when moving through windows/pans.
+
+
+
+TEST
+	[_] Check :wa! with dirty new buffer in vim w/o file to save
+		: to implement autosaving on FocusOut
+	[_] FIXME: erasing changes scenario
+		copied in clipboard, pressed $mSd+X, clipboard edited, change focus from vim
+			as result my edits will be replaced with current @" content
