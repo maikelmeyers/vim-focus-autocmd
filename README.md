@@ -34,7 +34,7 @@ You know how to use your's plugin manager, so convert it yourself:
 ```
 NeoBundle 'amerlyq/vim-focus-autocmd', {
     \ 'disabled' : !has('unix'),
-    \ 'build': 'res/setup'
+    \ 'build': { 'linux': 'bash ./res/setup' }
     \ }
 ```
 
