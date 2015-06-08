@@ -65,6 +65,11 @@ TODO
 	[_] Tmux
 		Must additionally send it's own events when moving through windows/pans.
 
+	[_] vim cursor for replace mode
+		http://andrewscala.com/vimscript/
+	[_] What will happend, if you disable focusing and accidentaly exit?
+	[_] I'm really don't understand why he does that in autoload/tmux_...
+		https://github.com/tmux-plugins/vim-tmux-focus-events
 
 
 TEST
