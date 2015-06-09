@@ -225,7 +225,6 @@ augroup END
 " | redraw!
 command! -bar -bang -nargs=0 TermFocusEnable call s:term_modes_enable(<bang>1)
 command! -bar -bang -nargs=0 TermFocusToggle call s:term_modes_enable(!g:term_modes_activate)
-
 nnoremap <unique> <Leader>tF :TermFocusToggle<CR>
 
 "=============================================================================
@@ -237,15 +236,18 @@ if g:term_sync_clipboard
     call setreg(a:dst, getreg(a:src, 1), getregtype(a:src))
   endfunction
 
-  "" ALT: If vim compiled w/o clipboard or launched by ssh:
-  " command -range Cz silent <line1>,<line2>write !xsel -ib
-  " cabbrev cv Cv  " To be able do simple ':cv' to copy text
-  " write !xsel -ib
-  " read !xsel -ob
-
-  "" ALT: Autosync regs @" and @+
-  " set clipboard^=unnamedplus
+  command! -bar -bang -nargs=0 TermFocusCopyIn call s:CopyReg(
+        \ g:term_clipreg_system, g:term_clipreg_noname, g:term_clipreg_backup)
+  command! -bar -bang -nargs=0 TermFocusCopyOut call s:CopyReg(
+        \ g:term_clipreg_noname, g:term_clipreg_system)
 endif
+
+"" ALT: If vim compiled w/o clipboard or launched by ssh:
+" command -range Cz silent <line1>,<line2>write !xsel -ib
+" cabbrev cv Cv  " To be able do simple ':cv' to copy text
+" write !xsel -ib
+" read !xsel -ob
+
 
 
 augroup TermFocusEvent
@@ -254,13 +256,9 @@ augroup TermFocusEvent
   " au FocusGained * set number
   " au FocusLost   * set nonumber
 
-  "" NOTE: FocusGained in next vim is triggered BEFORE FocusLost in previous
-  ""       Fixed by sleep 10 mS inside urxvt-focus
   if g:term_sync_clipboard
-    au FocusGained * call s:CopyReg(g:term_clipreg_system,
-          \ g:term_clipreg_noname, g:term_clipreg_backup)
-    au FocusLost   * call s:CopyReg(g:term_clipreg_noname,
-          \ g:term_clipreg_system)
+    au FocusGained * TermFocusCopyIn
+    au FocusLost   * TermFocusCopyOut
   endif
 
   "" Reload all changed, save all unchanged

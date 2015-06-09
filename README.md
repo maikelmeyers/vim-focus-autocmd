@@ -9,15 +9,16 @@ Features
     - sync_clipboard -- copies content between reg" and reg+ ;
     - sync_filestate -- re-reads changed buffers or saves them;
 * Introduces events FocusGained and FocusLost for terminal vim.
-* Different cursor shape for NORMAL/INSERT modes in terminal.
-    (Why integrated? Because it's terminal dependent staff.)
-* Different cursor color for primary/secondary language in terminal.
+* Different cursor shape for NORMAL/INSERT modes (why here? -- because it's
+        terminal dependent staff).
+* Different cursor color for primary/secondary language in terminal (you need
+        [vim-xkbswitch](https://github.com/lyokha/vim-xkbswitch) installed).
 * Highly customizable. Choose your own set of necessary features.
 
 
 Alternatives
 ------------
-* [vitality](https://github.com/sjl/vitality.vim) -- only iTerm2.
+* [vitality](https://github.com/sjl/vitality.vim) -- works only for iTerm2.
 
 
 Background
@@ -25,7 +26,15 @@ Background
 In my general workflow I use clipboard too often -- having many instances of
 vim, terminals, browsers, etc at once. No matter how little keystrokes you
 need for any simple mappings to copy to and from '+' register, it will always
-be too much. I tried really hard to accustom myself with no success.
+be too much. I tried really hard to accustom myself with no success. Solution
+is pretty cimple and cute -- make vim copy registers for you.
+
+There is default vim setting to autosync regs @" and @+:
+```vim
+set clipboard^=unnamedplus
+```
+but such workflow has flaws, as you will lost value in @+ as soon as you use
+@", which is desired to be preserved for repeated use.
 
 
 Installation
@@ -37,10 +46,11 @@ NeoBundle 'amerlyq/vim-focus-autocmd', {
     \ 'build': { 'linux': 'bash ./res/setup' }
     \ }
 ```
+That snippet will automatically update symlinks on ```:NeoBundleCheckUpdate```.
 
 
 FAQ
 ---------------
-Q: When switching between two vims in different terminals, FocusGained is
+* Q: When switching between two vims in different terminals, FocusGained is
 triggered, but sync_clipboard don't work.
-A: It greatly depends on terminal and environment.
+* A: It greatly depends on terminal and environment.
