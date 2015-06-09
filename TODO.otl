@@ -4,6 +4,8 @@
 	https://github.com/sjl/vitality.vim/blob/master/plugin/vitality.vim
 	>[_] find why mapping in cnoremap such a pain
 
+[_] https://github.com/jszakmeister/vim-togglecursor
+
 REF
 	all control sequences
 		http://invisible-island.net/xterm/ctlseqs/ctlseqs.html
@@ -12,9 +14,14 @@ REF
 		http://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-Mouse-Tracking
 	Vim codes
 		http://vimdoc.sourceforge.net/htmldoc/term.html#t_RV
+	Terminal-specific
+		http://www.tecmint.com/linux-terminal-emulators/
+		http://www.reddit.com/r/vim/comments/2of45a/terminal_vim_changing_cursor_shape_on_linux/
+		: http://vim.wikia.com/wiki/Configuring_the_cursor
+		: http://stackoverflow.com/questions/15217354/how-to-make-cursor-change-in-different-modes-in-vim
+
 
 TERMS
-: http://www.tecmint.com/linux-terminal-emulators/
 	URxvt (perl)
 		http://artisan.karma-lab.net/creer-plugin-urxvt-sauvegarder-vim-automatiquement
 		: <Change sources to implement>: VIM launch will enable notification of mouse
@@ -64,6 +71,8 @@ CHECK
 		: check default codes for urxvt too
 
 TODO
+	[_] ADD travis-ci
+		(kana) http://whileimautomaton.net/
 	WARNING when opening new terminal ($mod+u) vim is not opened yet, so buffer
 		will not be copied in @"! You must keep yank shortcuts for such cases.
 	[_] TODO: optionaly copy buffers on VimEnter/VimLeavePre also.

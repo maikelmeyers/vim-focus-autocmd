@@ -55,9 +55,9 @@ endfunction
 " AUTO-CHOOSE
 
 function! s:afoc_events_choose()
-  if &term =~ "^xterm\\|rxvt"
+  if &term =~ "^rxvt"
     let events = ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
-  elseif exists('$ITERM_PROFILE')
+  elseif &term =~ "^xterm" || exists('$ITERM_PROFILE')
     let events = ["\e[?1004h", "\e[?1004l"]
   else
     let events = ['', '']
@@ -70,12 +70,15 @@ endfunction
 
 
 function! s:afoc_shape_choose()
-  if &term =~ "^xterm\\|rxvt"
+  if &term =~ "^rxvt"
     " [1,2] -> [blinking,solid] block
     " [3,4] -> [blinking,solid] underscore
-    " [5,6] -> [blinking,solid] vbar (only in xterm > 282), not in urxvt?
+    " [5,6] -> [blinking,solid] vbar/I-beam (only in xterm > 282),
+    "     urxvt got only in 2015, build from recent git.
     let shapes = ["\e[2 q", "\e[4 q"]
-  elseif exists('$ITERM_PROFILE')
+  elseif &term =~ "^xterm\\|screen"
+    let shapes = ["\e[2 q", "\e[6 q"]
+  elseif &term =~ "^Konsole" || exists('$ITERM_PROFILE')
     let shapes = ["\e]50;CursorShape=0\x7", "\e]50;CursorShape=1\x7"]
   else
     let shapes = ['', '']
