@@ -2,12 +2,10 @@
 " @license MIT, (c) amerlyq, 2015
 " @brief Integration with term to receive focus events in vim. Auto-copy widget.
 
-if has('gui_running') || &cp || version < 700 ||
-      \ (exists('g:did_term_focus') && g:did_term_focus) | finish | endif
-let g:did_term_focus = 1
-
+if &cp || version < 700 || (exists('g:afoc_loaded') && g:afoc_loaded) | finish
+      \ | else | let g:afoc_loaded = 1 | endif
 "" Preserve previous cursor state
-" let s:old_SI=&t_SI | let s:old_EI=&t_EI
+let s:old_SI=&t_SI | let s:old_EI=&t_EI
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -15,7 +13,7 @@ set cpo&vim
 " OPTIONS
 
 " Must be defined separately from default_settings.
-let g:term_auto_configure = 1
+let g:afoc_auto_configure = 1
 
 " NOTE: check codes in terminal by (silent !echo -ne "...")
 " Defaults for iTerm2, " Up to <F37>
@@ -46,7 +44,7 @@ function! s:safe_define(...)
   let opts = a:0>1 ? a:1 : keys(a:1)
   let vals = a:0>1 ? a:2 : values(a:1)
   for i in range(min([len(opts), len(vals)]))  " a:{i}
-    let op = 'g:term_' . opts[i]
+    let op = 'g:afoc_' . opts[i]
     if !exists(op)
       exec 'let '. op .'="'. vals[i] .'"'
     endif
@@ -56,7 +54,7 @@ endfunction
 "=============================================================================
 " AUTO-CHOOSE
 
-function! s:term_events_choose()
+function! s:afoc_events_choose()
   if &term =~ "^xterm\\|rxvt"
     let events = ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
   elseif exists('$ITERM_PROFILE')
@@ -71,7 +69,7 @@ function! s:term_events_choose()
 endfunction
 
 
-function! s:term_shape_choose()
+function! s:afoc_shape_choose()
   if &term =~ "^xterm\\|rxvt"
     " [1,2] -> [blinking,solid] block
     " [3,4] -> [blinking,solid] underscore
@@ -88,10 +86,10 @@ function! s:term_shape_choose()
 endfunction
 
 
-function! s:term_color_choose(idx)
+function! s:afoc_color_choose(idx)
   if &term =~ "^xterm\\|rxvt"
-    let colors = [ "\e]12;". g:term_color_primary ."\x7",
-                 \ "\e]12;". g:term_color_secondary ."\x7" ]
+    let colors = [ "\e]12;". g:afoc_color_primary ."\x7",
+                 \ "\e]12;". g:afoc_color_secondary ."\x7" ]
   else
     "" ALT: ["\e]12;white\x9c", "\e]12;orange\x9c"]
     " use default \003]12;gray\007 for gnome-terminal
@@ -105,19 +103,19 @@ endfunction
 "=============================================================================
 " INTEGRATION
 
-function! s:term_modes_enable(state)
-  let g:term_modes_activate = a:state
-  if g:term_modes_activate
+function! s:afoc_modes_enable(state)
+  let g:afoc_modes_activate = a:state
+  if g:afoc_modes_activate
 
     "" FIX: add two color groups based on language, not permanent. See xkb.
-    let clr = s:term_color_choose(0)
+    let clr = s:afoc_color_choose(0)
 
     " Install insert mode autohooks -- on enter/leave
-    let &t_SI = g:term_cursor_insert . l:clr
-    let &t_EI = g:term_cursor_normal . l:clr
+    let &t_SI = g:afoc_cursor_insert . l:clr
+    let &t_EI = g:afoc_cursor_normal . l:clr
 
-    let on_init = &t_EI . g:term_focus_on
-    let on_exit = g:term_focus_off
+    let on_init = &t_EI . g:afoc_focus_on
+    let on_exit = g:afoc_focus_off
 
     " WARNING: must be outside this 'if', as it will not work in tmux
     " on_disable!
@@ -129,24 +127,24 @@ function! s:term_modes_enable(state)
     endif
 
     " Install focus autohooks -- on startup/shutdown
-    let &t_ti = on_init . g:term_screen_save
-    let &t_te = on_exit . g:term_screen_restore
+    let &t_ti = on_init . g:afoc_screen_save
+    let &t_te = on_exit . g:afoc_screen_restore
 
     " CHECK: Is it necessary to be able toggle dynamically?
-    " exec 'silent !echo -ne "'. &t_EI .g:term_focus_on .g:term_screen_save .'"'
+    " exec 'silent !echo -ne "'. &t_EI .g:afoc_focus_on .g:afoc_screen_save .'"'
   else
     let &t_ti = ''
     let &t_te = ''
 
     " CHECK: Is it necessary to be able toggle dynamically?
-    " exec 'silent !echo -ne "'. g:term_focus_off .g:term_screen_restore .'"'
+    " exec 'silent !echo -ne "'. g:afoc_focus_off .g:afoc_screen_restore .'"'
   endif
   " ALT:
-  " augroup term_focus
+  " augroup afoc_focus
   "   autocmd!
   "   if a:state
-  "     au VimEnter    * call s:term_cso('on')
-  "     au VimLeavePre * call s:term_cso('off')
+  "     au VimEnter    * call s:afoc_cso('on')
+  "     au VimLeavePre * call s:afoc_cso('off')
   "   endif
   " augroup END
 endfunction
@@ -176,27 +174,26 @@ function! s:map_all_modes(keys, mid, cmds)
 endfunction
 
 
-function! s:term_init()
-
-  if g:term_auto_configure
-    call s:term_events_choose()
-    call s:term_shape_choose()
+function! s:afoc_init()
+  if g:afoc_auto_configure
+    call s:afoc_events_choose()
+    call s:afoc_shape_choose()
 
     "" FIX: must be dynamic and check current lang before each mode
     " or lang switching.
-    " call s:term_lang_choose() "primary/secondary
+    " call s:afoc_lang_choose() "primary/secondary
   endif
 
   " Define all default options which left undefined till now.
   call s:safe_define(s:default_settings)
 
   " Map all
-  let keys  = [g:term_key_in, g:term_key_out]
-  let codes = [g:term_event_in, g:term_event_out]
+  let keys  = [g:afoc_key_in, g:afoc_key_out]
+  let codes = [g:afoc_event_in, g:afoc_event_out]
   for i in range(len(keys)) | exec 'set '. keys[i] .'='. codes[i] | endfor
   call s:map_all_modes(keys, 'silent doau ', ['FocusGained', 'FocusLost'])
 
-  call s:term_modes_enable(g:term_modes_activate)
+  call s:afoc_modes_enable(g:afoc_modes_activate)
 endfunction
 
 
@@ -206,40 +203,41 @@ unlet s:save_cpo
 "=============================================================================
 " MAPPINGS
 
-call s:term_init()
+if !has('gui_running')
+  call s:afoc_init()
 
-" MAYBE unnecessary?
-" autocmd! VimEnter * call s:term_modes_enable(1)
+  " MAYBE unnecessary?
+  " autocmd! VimEnter * call s:afoc_modes_enable(1)
 
+  " BUG: has no effect on restoring color after exit.
+  "" There are sequence to change color, but not the one to restore to default
+  " SEE Maybe save/restore the screen -- works for cursor? -- seems NO.
+  augroup AuFocusCursor
+    autocmd!
+    "" Restore cursor color and shape upon exit
+    autocmd VimLeave * let &t_SI = s:old_SI | let &t_EI = s:old_EI
+  augroup END
 
-" BUG: has no effect on restoring color after exit.
-"" There are sequence to change color, but not the one to restore to default
-" SEE Maybe save/restore the screen -- works for cursor? -- seems NO.
-augroup TermFocusCursor
-  autocmd!
-  "" Restore cursor color and shape upon exit
-  autocmd VimLeave * let &t_SI = s:old_SI | let &t_EI = s:old_EI
-augroup END
-
-
-" | redraw!
-command! -bar -bang -nargs=0 TermFocusEnable call s:term_modes_enable(<bang>1)
-command! -bar -bang -nargs=0 TermFocusToggle call s:term_modes_enable(!g:term_modes_activate)
-nnoremap <unique> <Leader>tF :TermFocusToggle<CR>
+  " | redraw!
+  command! -bar -bang -nargs=0 AuFocusEnable call s:afoc_modes_enable(<bang>1)
+  command! -bar -bang -nargs=0 AuFocusToggle call s:afoc_modes_enable(!g:afoc_modes_activate)
+  nnoremap <unique> <Leader>tF :AuFocusToggle<CR>
+endif
 
 "=============================================================================
 " WIDGETS
+" NOTE: widgets work in gvim even w/o previous integration with terminal.
 
-if g:term_sync_clipboard
+if g:afoc_sync_clipboard
   function! s:CopyReg(src, dst, ...)
     if a:0 > 0 | call setreg(a:1, getreg(a:dst, 1), getregtype(a:dst)) | endif
     call setreg(a:dst, getreg(a:src, 1), getregtype(a:src))
   endfunction
 
-  command! -bar -bang -nargs=0 TermFocusCopyIn call s:CopyReg(
-        \ g:term_clipreg_system, g:term_clipreg_noname, g:term_clipreg_backup)
-  command! -bar -bang -nargs=0 TermFocusCopyOut call s:CopyReg(
-        \ g:term_clipreg_noname, g:term_clipreg_system)
+  command! -bar -bang -nargs=0 AuFocusCopyIn call s:CopyReg(
+        \ g:afoc_clipreg_system, g:afoc_clipreg_noname, g:afoc_clipreg_backup)
+  command! -bar -bang -nargs=0 AuFocusCopyOut call s:CopyReg(
+        \ g:afoc_clipreg_noname, g:afoc_clipreg_system)
 endif
 
 "" ALT: If vim compiled w/o clipboard or launched by ssh:
@@ -250,19 +248,19 @@ endif
 
 
 
-augroup TermFocusEvent
+augroup AuFocusEvent
   autocmd!
   "" Testing
   " au FocusGained * set number
   " au FocusLost   * set nonumber
 
-  if g:term_sync_clipboard
-    au FocusGained * TermFocusCopyIn
-    au FocusLost   * TermFocusCopyOut
+  if g:afoc_sync_clipboard
+    au FocusGained * AuFocusCopyIn
+    au FocusLost   * AuFocusCopyOut
   endif
 
   "" Reload all changed, save all unchanged
-  if g:term_sync_filestate
+  if g:afoc_sync_filestate
     au FocusGained * bufdo checktime
     au FocusLost   * wa!
   endif
