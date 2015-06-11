@@ -260,6 +260,8 @@ augroup AuFocusEvent
   if g:afoc_sync_clipboard
     au FocusGained * AuFocusCopyIn
     au FocusLost   * AuFocusCopyOut
+    au VimEnter    * AuFocusCopyIn
+    au VimLeavePre * AuFocusCopyOut
   endif
 
   "" Reload all changed, save all unchanged

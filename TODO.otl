@@ -76,6 +76,8 @@ TODO
 	WARNING when opening new terminal ($mod+u) vim is not opened yet, so buffer
 		will not be copied in @"! You must keep yank shortcuts for such cases.
 	[_] TODO: optionaly copy buffers on VimEnter/VimLeavePre also.
+	[_] FIX: don't copy in @p if it's equal to @" (then several focusing
+		events will not replace it with @+)
 	[_] ADD checking for gvim -- then use guicursor options for color and shape
 	[_] Tmux
 		Must additionally send it's own events when moving through windows/pans.

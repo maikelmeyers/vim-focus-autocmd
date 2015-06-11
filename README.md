@@ -48,6 +48,9 @@ NeoBundle 'amerlyq/vim-focus-autocmd', {
 ```
 That snippet will automatically update symlinks on ```:NeoBundleCheckUpdate```.
 
+If after update something don't work, you must restart urxvt. Because it
+sources plugins only at loading time.
+
 
 FAQ
 ---------------
