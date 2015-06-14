@@ -71,6 +71,10 @@ CHECK
 		: check default codes for urxvt too
 
 TODO
+	[_] FIXME some my functions copies directly into '+', then on focus toggle
+		: their values will be replaced by current @". Need remake my functions
+		: or think about some mechanics to prevent such behaviour?
+		: Maybe copying into '*'?
 	[_] ADD travis-ci
 		(kana) http://whileimautomaton.net/
 	WARNING when opening new terminal ($mod+u) vim is not opened yet, so buffer
