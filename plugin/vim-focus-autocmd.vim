@@ -106,6 +106,10 @@ endfunction
 "=============================================================================
 " INTEGRATION
 
+function! s:tmux_wrap(s)
+  return "\ePtmux;". substitute(a:s, "\e\\|\<Esc>", "\e\e", 'g') ."\e\\"
+endfunction
+
 function! s:afoc_modes_enable(state)
   let g:afoc_modes_activate = a:state
   if g:afoc_modes_activate
