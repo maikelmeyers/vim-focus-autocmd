@@ -117,7 +117,8 @@ endfunction
 
 " WARNING: must be outside this 'if' in s:afoc_modes_enable, as it will not
 " work in tmux on_disable!
-if exists('$TMUX')
+
+if exists('$TMUX') || &term =~ "screen"  " FIXED for [tmux -> ssh | vim]
   " Disable bkgd color erase and don't truncate highlighting
   " So highlighted line does go all the way across screen
   set t_ut=
