@@ -1,6 +1,7 @@
-" vim:ts=2:sw=2:sts=2:fdm=marker:fdl=1
+" vim:ts=2:sw=2:sts=2:fdm=marker:fdl=1:tw=76
 " @license MIT, (c) amerlyq, 2015
-" @brief Integration with term to receive focus events in vim. Auto-copy widget.
+" @brief Integration with term to receive focus events in vim.
+"        Auto-copy widget.
 
 if &cp || version < 700 || (exists('g:afoc_loaded') && g:afoc_loaded) | finish
       \ | else | let g:afoc_loaded = 1 | endif
@@ -9,7 +10,7 @@ let s:old_SI=&t_SI | let s:old_EI=&t_EI
 let s:save_cpo = &cpo
 set cpo&vim
 
-"=============================================================================
+"===========================================================================
 " OPTIONS
 
 " Must be defined separately from default_settings.
@@ -51,18 +52,19 @@ function! s:safe_define(...)
   endfor
 endfunction
 
-"=============================================================================
+"===========================================================================
 " AUTO-CHOOSE
 
 function! s:afoc_events_choose()
   if &term =~ "^rxvt"
     let events = ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
-  elseif &term =~ "^xterm" || exists('$ITERM_PROFILE')
+  " NOTE: screen supports
+  elseif &term =~ "^xterm\\|screen" || exists('$ITERM_PROFILE')
     let events = ["\e[?1004h", "\e[?1004l"]
   else
     let events = ['', '']
     echom "Seems like your $TERM has no support for mouse focuse. Disabled."
-    echom "If you don't agree, disable auto_choose and set escape codes by yourself."
+    echom "If curious, disable 'auto_choose' and set escape codes manually."
   endif
 
   call s:safe_define(['focus_on', 'focus_off'], events)
@@ -70,19 +72,23 @@ endfunction
 
 
 function! s:afoc_shape_choose()
-  if &term =~ "^rxvt"
+  if &term =~ "^rxvt\\|screen"
     " [1,2] -> [blinking,solid] block
     " [3,4] -> [blinking,solid] underscore
     " [5,6] -> [blinking,solid] vbar/I-beam (only in xterm > 282),
-    "     urxvt got only in 2015, build from recent git.
+    "     urxvt got I-beam only in v9.21 2014-12-31, build from recent git.
     let shapes = ["\e[2 q", "\e[4 q"]
-  elseif &term =~ "^xterm\\|screen"
+    "" DISABLED: to reduce startup time, and it will not work through ssh
+    " let l:uver = substitute(split(system('urxvt -help 2>&1'), '\n')[0],
+    "       \ '.*v\([0-9.]\+\).*', '\1', '')
+    " let shapes = ["\e[2 q", (9.21 <= l:uver ? "\e[6 q" : "\e[4 q")]
+  elseif &term =~ "^xterm"
     let shapes = ["\e[2 q", "\e[6 q"]
   elseif &term =~ "^Konsole" || exists('$ITERM_PROFILE')
     let shapes = ["\e]50;CursorShape=0\x7", "\e]50;CursorShape=1\x7"]
   else
     let shapes = ['', '']
-    echom "Can't autodetect shape escape codes for this $TERM"
+    echom "Shape escape codes: can't autodetect for $TERM=" . $TERM
   endif
 
   call s:safe_define(['cursor_normal', 'cursor_insert'], shapes)
@@ -90,48 +96,54 @@ endfunction
 
 
 function! s:afoc_color_choose(idx)
-  if &term =~ "^xterm\\|rxvt"
+  if &term =~ "^xterm\\|screen\\|rxvt"
     let colors = [ "\e]12;". g:afoc_color_primary ."\x7",
                  \ "\e]12;". g:afoc_color_secondary ."\x7" ]
   else
     "" ALT: ["\e]12;white\x9c", "\e]12;orange\x9c"]
     " use default \003]12;gray\007 for gnome-terminal
     let colors = ['', '']
-    echom "Can't autodetect color escape codes for this $TERM"
+    echom "Color escape codes: can't autodetect for $TERM=" . $TERM
   endif
   return l:colors[a:idx]
 endfunction
 
 
-"=============================================================================
+"===========================================================================
 " INTEGRATION
 
-function! s:tmux_wrap(s)
-  return "\ePtmux;". substitute(a:s, "\e\\|\<Esc>", "\e\e", 'g') ."\e\\"
-endfunction
+"" WARNING: For focus-events to work in tmux, you need to set this option
+" inside your tmux.conf:   set -g focus-events on
+
+" WARNING: must be outside this 'if' in s:afoc_modes_enable, as it will not
+" work in tmux on_disable!
+if exists('$TMUX')
+  " Disable bkgd color erase and don't truncate highlighting
+  " So highlighted line does go all the way across screen
+  set t_ut=
+  function! s:tmux_wrap(s)
+    return "\ePtmux;". substitute(a:s, "\e\\|\<Esc>", "\e\e", 'g') ."\e\\"
+  endfunction
+else
+  function! s:tmux_wrap(s)
+    return a:s
+  endfunction
+endif
+
 
 function! s:afoc_modes_enable(state)
   let g:afoc_modes_activate = a:state
   if g:afoc_modes_activate
 
     "" FIX: add two color groups based on language, not permanent. See xkb.
-    let clr = s:afoc_color_choose(0)
+    let color = s:afoc_color_choose(0)
 
     " Install insert mode autohooks -- on enter/leave
-    let &t_SI = g:afoc_cursor_insert . l:clr
-    let &t_EI = g:afoc_cursor_normal . l:clr
+    let &t_SI = s:tmux_wrap(g:afoc_cursor_insert . l:color)
+    let &t_EI = s:tmux_wrap(g:afoc_cursor_normal . l:color)
 
-    let on_init = &t_EI . g:afoc_focus_on
-    let on_exit = g:afoc_focus_off
-
-    " WARNING: must be outside this 'if', as it will not work in tmux
-    " on_disable!
-    if exists('$TMUX')
-      " Disable bkgd color erase to adequate bkgd color
-      set t_ut=
-      let on_init = s:tmux_wrap(on_init)
-      let on_exit = s:tmux_wrap(on_exit)
-    endif
+    let on_init = &t_EI . s:tmux_wrap(g:afoc_focus_on)
+    let on_exit = s:tmux_wrap(g:afoc_focus_off)
 
     " Install focus autohooks -- on startup/shutdown
     let &t_ti = on_init . g:afoc_screen_save
@@ -207,7 +219,7 @@ endfunction
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
-"=============================================================================
+"===========================================================================
 " MAPPINGS
 
 if !has('gui_running')
@@ -226,8 +238,10 @@ if !has('gui_running')
   augroup END
 
   " | redraw!
-  command! -bar -bang -nargs=0 AuFocusEnable call s:afoc_modes_enable(<bang>1)
-  command! -bar -bang -nargs=0 AuFocusToggle call s:afoc_modes_enable(!g:afoc_modes_activate)
+  command! -bar -bang -nargs=0 AuFocusEnable
+        \ call s:afoc_modes_enable(<bang>1)
+  command! -bar -bang -nargs=0 AuFocusToggle
+        \ call s:afoc_modes_enable(!g:afoc_modes_activate)
   nnoremap <unique> <Leader>tF :AuFocusToggle<CR>
 endif
 

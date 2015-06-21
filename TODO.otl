@@ -3,6 +3,9 @@
 :> Too rigid, can't adapt for all cases. Must rewrite completely.
 	https://github.com/sjl/vitality.vim/blob/master/plugin/vitality.vim
 	>[_] find why mapping in cnoremap such a pain
+[_] I'm really don't understand why he does that in autoload/tmux_...
+	:= seems like it was autosaving/loading buffers on focus events
+	https://github.com/tmux-plugins/vim-tmux-focus-events
 
 [_] https://github.com/jszakmeister/vim-togglecursor
 
@@ -19,6 +22,13 @@ REF
 		http://www.reddit.com/r/vim/comments/2of45a/terminal_vim_changing_cursor_shape_on_linux/
 		: http://vim.wikia.com/wiki/Configuring_the_cursor
 		: http://stackoverflow.com/questions/15217354/how-to-make-cursor-change-in-different-modes-in-vim
+
+DEBUG
+	Intercept all input in file
+	: sub on_tt_write { my ($self, $octets) = @_;
+	:	system("bash -c 'printf \"$octets\n\" >> /home/amerlyq/vlog'");
+	See inputted symbols
+		tail -f vlog | stdbuf -oL cut -d ' ' -f1 | xxd -c 1
 
 
 TERMS
@@ -42,6 +52,12 @@ TERMS
 		: Besides, the idea is already a little set up in a little-known plugin urxvt, clipboard-osc.
 
 
+>> Seems like, I can't integrate focus events for urxvt with tmux.
+	Case 1: intercept standard '\033[?1004l' command for focus enable/disable
+	Case 2: change focus enable/disable sequences which tmux sends to urxvt
+	: No results:  urxvt perl hook "CSI" sequence
+
+
 GENERAL
 	2015-06-04 [X] Check if that codes are in spec now  :> Yes (xterm, iTerm2)
 	: FocusIn/FocusOut control sequences, which uses CSI O and CSI I
@@ -58,6 +74,10 @@ BUG
 	[_] BUG: returning into vim drops visual selection -- so 'gv' after vnoremap is not enough?
 	2015-06-08 [X] BUG: cursor don't change form in insert.
 	:> urxvt don't have 'vbar' cursor
+	[_] BUG: on <C-y> with specific reg content, may be error msgs produced.
+		: So, for FocusOut/In use function version w/o printing
+	[_] BUG: cursor not changing shape inside tmux
+
 
 CHECK
 	[_] Copying through // 2015-06-09
@@ -71,6 +91,9 @@ CHECK
 		: check default codes for urxvt too
 
 TODO
+	[_] Tmux :> must additionally send it's own events when moving through windows/pans.
+		[_] SEE tmux already integrated focus feature:  focus-events [on|off]
+			: http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man1/tmux.1?query=tmux&sec=1
 	[_] FIXME some my functions copies directly into '+', then on focus toggle
 		: their values will be replaced by current @". Need remake my functions
 		: or think about some mechanics to prevent such behaviour?
@@ -83,13 +106,9 @@ TODO
 	[_] FIX: don't copy in @p if it's equal to @" (then several focusing
 		events will not replace it with @+)
 	[_] ADD checking for gvim -- then use guicursor options for color and shape
-	[_] Tmux
-		Must additionally send it's own events when moving through windows/pans.
 	[_] vim cursor for replace mode
 		http://andrewscala.com/vimscript/
 	[_] What will happend, if you disable focusing and accidentaly exit?
-	[_] I'm really don't understand why he does that in autoload/tmux_...
-		https://github.com/tmux-plugins/vim-tmux-focus-events
 
 
 TEST
