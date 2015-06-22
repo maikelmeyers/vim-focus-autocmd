@@ -77,6 +77,8 @@ BUG
 	[_] BUG: on <C-y> with specific reg content, may be error msgs produced.
 		: So, for FocusOut/In use function version w/o printing
 	[_] BUG: cursor not changing shape inside tmux
+	[_] BUG: can't start vim, if '*' contains big (>12K) json file content
+		: How to mitigate such?
 
 
 CHECK
