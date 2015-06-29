@@ -3,8 +3,10 @@
 " @brief Integration with term to receive focus events in vim.
 "        Auto-copy widget.
 
-if &cp || version < 700 || (exists('g:afoc_loaded') && g:afoc_loaded) | finish
-      \ | else | let g:afoc_loaded = 1 | endif
+if &cp || version < 700 || has('gui_running') || &term =~ linux ||
+      \ (exists('g:afoc_loaded') && g:afoc_loaded)
+      \ | finish | else | let g:afoc_loaded = 1 | endif
+
 "" Preserve previous cursor state
 let s:old_SI=&t_SI | let s:old_EI=&t_EI
 let s:save_cpo = &cpo
