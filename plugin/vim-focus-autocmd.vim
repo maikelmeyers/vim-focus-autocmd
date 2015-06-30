@@ -3,7 +3,7 @@
 " @brief Integration with term to receive focus events in vim.
 "        Auto-copy widget.
 
-if &cp || version < 700 || has('gui_running') || &term =~ linux ||
+if &cp || version < 700 || has('gui_running') || &term =~ 'linux' ||
       \ (exists('g:afoc_loaded') && g:afoc_loaded)
       \ | finish | else | let g:afoc_loaded = 1 | endif
 
