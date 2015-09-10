@@ -48,7 +48,7 @@ TERMS
 		: is feasible by defining a sequence OSC "clipboard" qu'URxvt recover to
 		: transfer the contents into the CLIPBOARD selection of the local X11 server.
 		: Something like:
-		: 	echo -en "\033]777;CLIPBOARD;ON\077Ceci est mon texte à copier\033]777;CLIPBOARD;OFF\077"
+		:	echo -en "\033]777;CLIPBOARD;ON\077Ceci est mon texte à copier\033]777;CLIPBOARD;OFF\077"
 		: Besides, the idea is already a little set up in a little-known plugin urxvt, clipboard-osc.
 
 
@@ -109,7 +109,7 @@ TODO
 	[_] FIX: don't copy in @p if it's equal to @" (then several focusing
 		events will not replace it with @+)
 	[_] ADD checking for gvim -- then use guicursor options for color and shape
-	[_] vim cursor for replace mode
+	[_] vim cursor for replace mode -- t_SR
 		http://andrewscala.com/vimscript/
 	[_] What will happend, if you disable focusing and accidentaly exit?
 

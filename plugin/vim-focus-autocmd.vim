@@ -8,7 +8,7 @@ if &cp || version < 700 || has('gui_running') || &term =~ 'linux' ||
       \ | finish | else | let g:afoc_loaded = 1 | endif
 
 "" Preserve previous cursor state
-let s:old_SI=&t_SI | let s:old_EI=&t_EI
+let s:old_SI=&t_SI | let s:old_EI=&t_EI | let s:old_RS=&t_SR
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -32,6 +32,7 @@ let s:default_settings = {
     \ 'event_out': "\e[O",
     \ 'cursor_normal': '',
     \ 'cursor_insert': '',
+    \ 'cursor_replace': '',
     \ 'color_primary': 'white',
     \ 'color_secondary': 'cyan',
     \ 'focus_on':  "\e[?1004h",
@@ -75,25 +76,31 @@ endfunction
 
 function! s:afoc_shape_choose()
   if &term =~ "^rxvt\\|screen"
+
     " [1,2] -> [blinking,solid] block
     " [3,4] -> [blinking,solid] underscore
     " [5,6] -> [blinking,solid] vbar/I-beam (only in xterm > 282),
     "     urxvt got I-beam only in v9.21 2014-12-31, build from recent git.
-    let shapes = ["\e[2 q", "\e[4 q"]
+    let shapes = ["\e[2 q", "\e[6 q", "\e[4 q"]
+
     "" DISABLED: to reduce startup time, and it will not work through ssh
+    " let uver = eval(substitute(system('urxvt -h 2>&1'),
+    "       \ '\v.*v(\d+)\.(\d+).*', '\1+\2.0/100', ''))
+    " let shapes = ["\e[2 q", (l:uver<9.21? "\e[4 q": "\e[6 q"), "\e[4 q"]
     " let l:uver = substitute(split(system('urxvt -help 2>&1'), '\n')[0],
     "       \ '.*v\([0-9.]\+\).*', '\1', '')
     " let shapes = ["\e[2 q", (9.21 <= l:uver ? "\e[6 q" : "\e[4 q")]
+
   elseif &term =~ "^xterm"
-    let shapes = ["\e[2 q", "\e[6 q"]
+    let shapes = ["\e[2 q", "\e[6 q", '']
   elseif &term =~ "^Konsole" || exists('$ITERM_PROFILE')
-    let shapes = ["\e]50;CursorShape=0\x7", "\e]50;CursorShape=1\x7"]
+    let shapes = ["\e]50;CursorShape=0\x7", "\e]50;CursorShape=1\x7", '']
   else
-    let shapes = ['', '']
+    let shapes = ['', '', '']
     echom "Shape escape codes: can't autodetect for $TERM=" . $TERM
   endif
-
-  call s:safe_define(['cursor_normal', 'cursor_insert'], shapes)
+  call s:safe_define(['cursor_normal', 'cursor_insert',
+        \ 'cursor_replace'], shapes)
 endfunction
 
 
@@ -144,6 +151,7 @@ function! s:afoc_modes_enable(state)
     " Install insert mode autohooks -- on enter/leave
     let &t_SI = s:tmux_wrap(g:afoc_cursor_insert . l:color)
     let &t_EI = s:tmux_wrap(g:afoc_cursor_normal . l:color)
+    let &t_SR = s:tmux_wrap(g:afoc_cursor_replace . l:color)
 
     let on_init = &t_EI . s:tmux_wrap(g:afoc_focus_on)
     let on_exit = s:tmux_wrap(g:afoc_focus_off)
@@ -237,7 +245,8 @@ if !has('gui_running')
   augroup AuFocusCursor
     autocmd!
     "" Restore cursor color and shape upon exit
-    autocmd VimLeave * let &t_SI = s:old_SI | let &t_EI = s:old_EI
+    autocmd VimLeave * let &t_SI = s:old_SI
+          \ | let &t_EI = s:old_EI | let &t_SR = s:old_RS
   augroup END
 
   " | redraw!
