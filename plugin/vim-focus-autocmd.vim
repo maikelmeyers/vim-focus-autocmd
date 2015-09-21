@@ -8,7 +8,8 @@ if &cp || version < 700 || has('gui_running') || &term =~ 'linux' ||
       \ | finish | else | let g:afoc_loaded = 1 | endif
 
 "" Preserve previous cursor state
-let s:old_SI=&t_SI | let s:old_EI=&t_EI | let s:old_RS=&t_SR
+let s:old_SI=&t_SI | let s:old_EI=&t_EI
+      \ | if exists('&t_SR') | let s:old_RS=&t_SR | endif
 let s:save_cpo = &cpo
 set cpo&vim
 
@@ -151,7 +152,9 @@ function! s:afoc_modes_enable(state)
     " Install insert mode autohooks -- on enter/leave
     let &t_SI = s:tmux_wrap(g:afoc_cursor_insert . l:color)
     let &t_EI = s:tmux_wrap(g:afoc_cursor_normal . l:color)
-    let &t_SR = s:tmux_wrap(g:afoc_cursor_replace . l:color)
+    if exists('&t_SR')
+      let &t_SR = s:tmux_wrap(g:afoc_cursor_replace . l:color)
+    endif
 
     let on_init = &t_EI . s:tmux_wrap(g:afoc_focus_on)
     let on_exit = s:tmux_wrap(g:afoc_focus_off)
@@ -245,8 +248,8 @@ if !has('gui_running')
   augroup AuFocusCursor
     autocmd!
     "" Restore cursor color and shape upon exit
-    autocmd VimLeave * let &t_SI = s:old_SI
-          \ | let &t_EI = s:old_EI | let &t_SR = s:old_RS
+    autocmd VimLeave * let &t_SI = s:old_SI | let &t_EI = s:old_EI
+          \ | if exists('&t_SR') | let &t_SR = s:old_RS | endif
   augroup END
 
   " | redraw!
