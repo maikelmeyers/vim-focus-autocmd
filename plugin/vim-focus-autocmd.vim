@@ -60,7 +60,7 @@ endfunction
 " AUTO-CHOOSE
 
 function! s:afoc_events_choose()
-  if &term =~ "^rxvt"
+  if &term =~ "^rxvt\\|nvim"
     let events = ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
   " NOTE: screen supports
   elseif &term =~ "^xterm\\|screen" || exists('$ITERM_PROFILE')
@@ -76,7 +76,7 @@ endfunction
 
 
 function! s:afoc_shape_choose()
-  if &term =~ "^rxvt\\|screen"
+  if &term =~ "^rxvt\\|screen\\|nvim"
 
     " [1,2] -> [blinking,solid] block
     " [3,4] -> [blinking,solid] underscore
@@ -106,7 +106,7 @@ endfunction
 
 
 function! s:afoc_color_choose(idx)
-  if &term =~ "^xterm\\|screen\\|rxvt"
+  if &term =~ "^xterm\\|screen\\|rxvt\\|nvim"
     let colors = [ "\e]12;". g:afoc_color_primary ."\x7",
                  \ "\e]12;". g:afoc_color_secondary ."\x7" ]
   else
