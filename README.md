@@ -51,6 +51,10 @@ That snippet will automatically update symlinks on ```:NeoBundleCheckUpdate```.
 If after update something don't work, you must restart urxvt. Because it
 sources plugins only at loading time.
 
+Used in connection with
+[vim-focus-autocmd](https://github.com/amerlyq/vim-focus-autocmd).
+Install it for plugin to work in urxvt. In XTerm will work as is.
+
 
 FAQ
 ---------------
