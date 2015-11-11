@@ -3,7 +3,7 @@
 " @brief Integration with term to receive focus events in vim.
 "        Auto-copy widget.
 
-if &cp || version < 700 || has('gui_running') || &term =~ 'linux' ||
+if &cp || version < 700 || has('gui_running') || $TERM =~ 'linux' ||
       \ (exists('g:afoc_loaded') && g:afoc_loaded)
       \ | finish | else | let g:afoc_loaded = 1 | endif
 
@@ -60,10 +60,10 @@ endfunction
 " AUTO-CHOOSE
 
 function! s:afoc_events_choose()
-  if &term =~ "^rxvt\\|nvim"
+  if $TERM =~ '^\%(rxvt\|nvim\)'
     let events = ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
   " NOTE: screen supports
-  elseif &term =~ "^xterm\\|screen" || exists('$ITERM_PROFILE')
+  elseif $TERM =~ '^\%(xterm\|screen\)' || exists('$ITERM_PROFILE')
     let events = ["\e[?1004h", "\e[?1004l"]
   else
     let events = ['', '']
@@ -76,7 +76,7 @@ endfunction
 
 
 function! s:afoc_shape_choose()
-  if &term =~ "^rxvt\\|screen\\|nvim"
+  if $TERM =~ '^\%(rxvt\|screen\|nvim\)'
 
     " [1,2] -> [blinking,solid] block
     " [3,4] -> [blinking,solid] underscore
@@ -92,9 +92,9 @@ function! s:afoc_shape_choose()
     "       \ '.*v\([0-9.]\+\).*', '\1', '')
     " let shapes = ["\e[2 q", (9.21 <= l:uver ? "\e[6 q" : "\e[4 q")]
 
-  elseif &term =~ "^xterm"
+  elseif $TERM =~ '^xterm'
     let shapes = ["\e[2 q", "\e[6 q", '']
-  elseif &term =~ "^Konsole" || exists('$ITERM_PROFILE')
+  elseif $TERM =~ '^Konsole' || exists('$ITERM_PROFILE')
     let shapes = ["\e]50;CursorShape=0\x7", "\e]50;CursorShape=1\x7", '']
   else
     let shapes = ['', '', '']
@@ -106,7 +106,7 @@ endfunction
 
 
 function! s:afoc_color_choose(idx)
-  if &term =~ "^xterm\\|screen\\|rxvt\\|nvim"
+  if $TERM =~ '^\%(xterm\|screen\|rxvt\|nvim\)'
     let colors = [ "\e]12;". g:afoc_color_primary ."\x7",
                  \ "\e]12;". g:afoc_color_secondary ."\x7" ]
   else
@@ -128,7 +128,7 @@ endfunction
 " WARNING: must be outside this 'if' in s:afoc_modes_enable, as it will not
 " work in tmux on_disable!
 
-if exists('$TMUX') || &term =~ "screen"  " FIXED for [tmux -> ssh | vim]
+if exists('$TMUX') || $TERM =~ 'screen'  " FIXED for [tmux -> ssh | vim]
   " Disable bkgd color erase and don't truncate highlighting
   " So highlighted line does go all the way across screen
   set t_ut=
