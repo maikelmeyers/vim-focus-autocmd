@@ -253,11 +253,11 @@ if !has('gui_running')
   augroup END
 
   " | redraw!
-  command! -bar -bang -nargs=0 AuFocusEnable
+  command! -bar -bang -nargs=0 AutoFocusEnable
         \ call s:afoc_modes_enable(<bang>1)
-  command! -bar -bang -nargs=0 AuFocusToggle
+  command! -bar -bang -nargs=0 AutoFocusToggle
         \ call s:afoc_modes_enable(!g:afoc_modes_activate)
-  nnoremap <unique> <Leader>tF :AuFocusToggle<CR>
+  " nnoremap <unique> <Leader>tF :AutoFocusToggle<CR>
 endif
 
 "=============================================================================
