@@ -23,6 +23,17 @@ REF
 		: http://vim.wikia.com/wiki/Configuring_the_cursor
 		: http://stackoverflow.com/questions/15217354/how-to-make-cursor-change-in-different-modes-in-vim
 
+
+TESTCASE
+	Check for all modes [nxsoicl]
+		Don't change current/next state [text, selection, operation]
+		Allowed side-effects  -- like :update! on FocusLost
+	Check on Vim Enter/Leave
+		Enabling/disabling events subscription
+		First/last focus events
+		: Test that edited buffers NOT auto-saved on exit! Need prompt!
+
+
 DEBUG
 	Intercept all input in file
 	: sub on_tt_write { my ($self, $octets) = @_;

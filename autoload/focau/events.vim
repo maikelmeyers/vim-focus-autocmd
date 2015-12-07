@@ -12,7 +12,7 @@ if exists('$TMUX') || $TERM =~ 'screen'  " FIXED for [tmux -> ssh | vim]
   endfunction
 else
   function! s:wrap(s)
-    return a:s
+    return escape(a:s, ' ')
   endfunction
 endif
 
@@ -39,25 +39,25 @@ endfunction
 "   endif
 " augroup END
 function! focau#events#enable(state)
-  let g:focau_active = a:state
-  if !g:focau_active | let &t_ti = '' | let &t_te = '' | return | endif
+  let g:focau.active = a:state
+  if !g:focau.active | let &t_ti = '' | let &t_te = '' | return | endif
   " CHECK: Is it necessary to be able toggle dynamically?
-  " exec 'silent !echo -ne "'. g:focau_focus_off .g:focau_screen[1] .'"'
+  " exec 'silent !echo -ne "'. g:focau.focuses[1] .g:focau.screens[1] .'"'
 
   "" FIX: add two color groups based on language, not permanent. See xkb.
   let color = focau#cursor#auto_color(0)
   let codes = ['t_EI', 't_SI', 't_SR']
   " Install insert mode autohooks -- on enter/leave
   for i in range(3)| if exists('&'.codes[i])
-    exe 'set '.codes[i].'="'.s:wrap(g:focau_cursors[i].l:color).'"'
+    exe 'set '.codes[i].'='.s:wrap(g:focau.cursors[i] . l:color)
   endif | endfor
 
-  let on_init = &t_EI . s:wrap(g:focau_focuses[0]) . g:focau_screens[0]
-  let on_exit = s:wrap(g:focau_focuses[1]) . g:focau_screens[1]
+  let on_init = &t_EI . s:wrap(g:focau.focuses[0]) . g:focau.screens[0]
+  let on_exit = s:wrap(g:focau.focuses[1]) . g:focau.screens[1]
 
   " Install focus autohooks -- on startup/shutdown
   let &t_ti = on_init | let &t_te = on_exit
 
   " CHECK: Is it necessary to be able toggle dynamically?
-  " exec 'silent !echo -ne "'.&t_EI.g:focau_focus_c[0].g:focau_screens[0].'"'
+  " exec 'silent !echo -ne "'.&t_EI.g:focau.focuses[0].g:focau.screens[0].'"'
 endfunction

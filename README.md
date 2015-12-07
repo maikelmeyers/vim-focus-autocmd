@@ -12,13 +12,22 @@ Features
         terminal dependent staff).
 * Different cursor color for primary/secondary language in terminal (you need
         [vim-xkbswitch](https://github.com/lyokha/vim-xkbswitch) installed).
-* List of options for customization you can see in ```plugin/focau.vim```
+* List of options for customization you can see in ```plugin/focau.vim```.
+  You have several ways to change default options:
+```VimL
+" #1 -- set all options of interest at once
+let g:focau = {'key': 'value'}
+" #2 -- allows adding comments after options
+let g:focau = {}
+let g:focau.key = 'value'
+```
 
 
 Alternatives
 ------------
-* [vitality](https://github.com/sjl/vitality.vim) -- works only for iTerm2.
-
+* [vitality](https://github.com/sjl/vitality.vim) -- works only for iTerm2. Seized.
+* [tmux-plugins](https://github.com/tmux-plugins/vim-tmux-focus-events) -- no
+urxvt support. Was refined and completely melded with this plugin.
 
 Background
 ----------

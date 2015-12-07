@@ -26,29 +26,26 @@ endfunction
 
 
 function! focau#cursor#auto_color(idx)
-  if $TERM =~ '^\%(xterm\|screen\|rxvt\|nvim\)'
-    let colors = [ "\e]12;". g:focau_colors[0] ."\x7",
-                 \ "\e]12;". g:focau_colors[1] ."\x7" ]
+  if $TERM =~ '\v^%(xterm|screen|rxvt)'
+    let colors = [ "\e]12;". g:focau.colors[0] ."\x7",
+                 \ "\e]12;". g:focau.colors[1] ."\x7" ]
   else
     "" ALT: ["\e]12;white\x9c", "\e]12;orange\x9c"]
     " use default \003]12;gray\007 for gnome-terminal
-    echom "Color escape codes: can't autodetect for $TERM=" . $TERM
+    echom "Err: can't detect escape codes for cursor colors in $TERM=" . $TERM
     let colors = ['', '']
   endif
   return l:colors[a:idx]
 endfunction
 
 
-function! focau#cursor#auto_restore()
+function! focau#cursor#shape_preserve()
   "" Preserve previous cursor state and restore upon exit
   let s:old_SI=&t_SI | let s:old_EI=&t_EI | if exists('&t_SR')
       \| let s:old_RS=&t_SR | endif
   " BUG: has no effect on restoring color after exit.
   "" There are sequence to change color, but not the one to restore to default
   " SEE Maybe save/restore the screen -- works for cursor? -- seems NO.
-  augroup focau
-    autocmd!
-    au focau VimLeave * let &t_SI = s:old_SI | let &t_EI = s:old_EI
-        \| if exists('&t_SR') | let &t_SR = s:old_RS | endif
-  augroup END
+  au focau VimLeave * let &t_SI = s:old_SI | let &t_EI = s:old_EI
+      \| if exists('&t_SR') | let &t_SR = s:old_RS | endif
 endfunction
