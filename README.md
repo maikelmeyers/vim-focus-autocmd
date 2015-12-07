@@ -1,6 +1,7 @@
 vim-focus-events
 ==============
 Provided focus events for vim in termnals: urxvt, XTerm, Konsole and iTerm2.
+
 Neovim ```>v0.1.1``` provides focus events by itself for XTerm/Konsole.
 
 Features
@@ -65,10 +66,12 @@ set -g focus-events on
 FAQ
 ---------------
 * Q: When switching between two vims in different terminals, FocusGained is
-triggered, but sync_clipboard don't work.
+triggered, but widget ```clipboard``` don't work.
 * A: It greatly depends on terminal and environment timings, because
 FocusGained in current terminal can be triggered *before* FocusLost in
-previous.
+previous. And copying actually happens, but copies the same previous text.
+Another problem -- if you use ```xsel``` in background -- then again copying can
+have reverse order by two ```xsel``` processes races.
 * Q: I don't receive FocusLost/FocusGained when cursor in cmdline
 * A: You simply don't see its consequences -- because screen wasn't redrawed.
 Moreover, cmline executes mappings in sandbox (see :h sandbox), so some
@@ -83,5 +86,5 @@ reliable way to execute function being in OP and restore OP command after that.
 neovim is detached from terminal and there no way to send sequences directly.
 Those sequences are necessary, as ```urxvt``` has non-standart focus activation.
 
-*If someone knows way to cure one of problems described in this FAQ, feel free
+*P.S. If someone knows way to cure one of problems described in this FAQ, feel free
 to create issue with mitigation and I'll gladly improve this plugin*
