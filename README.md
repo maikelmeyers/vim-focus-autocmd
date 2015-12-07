@@ -1,6 +1,7 @@
 vim-focus-events
 ==============
 Provided focus events for vim in termnals: urxvt, XTerm, Konsole and iTerm2.
+Neovim ```>v0.1.1``` provides focus events by itself for XTerm/Konsole.
 
 Features
 --------
@@ -77,9 +78,10 @@ stuff inside autocmd linked to ```Focus*``` can't be executed at all.
 reliable way to execute function being in OP and restore OP command after that.
 * Q: In SELECT mode sometimes selected text became deleted when switching.
 * A: ```snoremap``` are unreliable. Don't use this mode as much as you can?:)
-* Q: Don't work in neovim
+* Q: Don't work with neovim in urxvt.
 * A: Wait for neovim v0.2 where ```t_ti/te``` must be repaired. Currently
 neovim is detached from terminal and there no way to send sequences directly.
+Those sequences are necessary, as ```urxvt``` has non-standart focus activation.
 
 *If someone knows way to cure one of problems described in this FAQ, feel free
 to create issue with mitigation and I'll gladly improve this plugin*

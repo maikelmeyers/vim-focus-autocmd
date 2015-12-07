@@ -8,7 +8,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " NOTE: check codes in terminal by (silent !echo -ne "...")
-" Defaults for iTerm2, " Up to <F37>
+" Codes are default for iTerm2. Keys for events -- use up to <F37>
 " Use modern xterm codes (or create your own: ^[[UlFocusIn, ^[[UlFocusOut)
 let g:focau = extend({
   \ 'auto': 1,
@@ -18,21 +18,20 @@ let g:focau = extend({
   \ 'screens': ["\e[?1049h", "\e[?1049l"],
   \ 'cursors': ['', '', ''],
   \ 'colors' : ['white', 'cyan'],
-  \ 'widgets': ['clipboard', 'buffers', 'number'],
+  \ 'widgets': [],
   \ 'clipregs':['+"p', '"+'],
   \}, get(g:, 'focau', {}))
+" widgets: ['clipboard', 'buffers', 'number']
 
 
-" NOTE: widgets work in gvim even w/o previous integration with terminal.
-if !has('gui_running')
+" NOTE: gvim and nvim>v0.1.1 (for XTerm, Konsole) works as is.
+if !has('gui_running') && (!has('nvim') || $TERM =~ '^rxvt')
   call focau#init#main()
 
   command! -bar -bang -nargs=0 FocusAutocmdEnable
         \ call focau#events#enable(<bang>1)
   command! -bar -bang -nargs=0 FocusAutocmdToggle
         \ call focau#events#enable(!g:focau.active)
-  " MAYBE unnecessary?
-  " au! focau VimEnter * FocusAutocmdEnable
 endif
 
 " Load specified widgets -- both for TUI ang GUI
