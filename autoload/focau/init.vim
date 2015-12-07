@@ -25,7 +25,7 @@ function! focau#init#main(auto_choose)
     " call s:focau_lang_choose() "primary/secondary
   endif
   " Define all default options which left undefined till now.
-  call s:safe_define(g:focau_options)
+  call s:safe_define(g:focau_defaults)
   " Wrap choosen keys in event triggers
   for [key, code] in items(g:focau_events) | exe 'set '.key.'='.code | endfor
   call s:map_triggers(keys(g:focau_events))

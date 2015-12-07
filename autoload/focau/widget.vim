@@ -21,14 +21,14 @@ function! focau#widget#clipboard()
   endfunction
 
   function! s:CopyClosure(au, idx)
-    exe printf("au focau %s * call s:CopyReg(%s)", a:au, join(map(split(
-          \ g:focau_clipreg[a:idx], '\zs'), "'v:val'"), ','))
+    exec printf("au focau %s * call s:CopyReg(%s)", a:au, join(map(split(
+          \ g:focau_clipregs[a:idx], '\zs'), '"''".v:val."''"'), ','))
   endfunction
 
-  call s:CopyClosure(FocusGained', 0)
-  call s:CopyClosure(FocusLost',   1)
-  call s:CopyClosure(VimEnter',    0)
-  call s:CopyClosure(VimLeavePre', 1)
+  call s:CopyClosure('FocusGained', 0)
+  call s:CopyClosure('FocusLost',   1)
+  call s:CopyClosure('VimEnter',    0)
+  call s:CopyClosure('VimLeavePre', 1)
 endfunction
 
 

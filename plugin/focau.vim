@@ -13,14 +13,16 @@ let g:focau_auto_configure = 1
 " NOTE: check codes in terminal by (silent !echo -ne "...")
 " Defaults for iTerm2, " Up to <F37>
 " Use modern xterm codes (or create your own: ^[[UlFocusIn, ^[[UlFocusOut)
-let g:focau_options = {'active': 1}
-let g:focau_options.events   = {'<F25>': "\e[I", '<F26>': "\e[O"}
-let g:focau_options.focuses  = ["\e[?1004h", "\e[?1004l"]
-let g:focau_options.screens  = ["\e[?1049h", "\e[?1049l"]
-let g:focau_options.cursors  = ['', '', '']
-let g:focau_options.colors   = ['white', 'cyan']
-let g:focau_options.widgets  = []  " 'clipboard', 'buffers'
-let g:focau_options.clipregs = ['+"p', '"+']
+
+" You can setup options in .vimrc w/o '_defaults.' part (Like: g:focau_events=)
+let g:focau_defaults = {'active': 1}
+let g:focau_defaults.events   = {'<F25>': "\e[I", '<F26>': "\e[O"}
+let g:focau_defaults.focuses  = ["\e[?1004h", "\e[?1004l"]
+let g:focau_defaults.screens  = ["\e[?1049h", "\e[?1049l"]
+let g:focau_defaults.cursors  = ['', '', '']
+let g:focau_defaults.colors   = ['white', 'cyan']
+let g:focau_defaults.widgets  = ['clipboard', 'buffers', 'number']
+let g:focau_defaults.clipregs = ['+"p', '"+']
 
 " NOTE: widgets work in gvim even w/o previous integration with terminal.
 if !has('gui_running')
