@@ -8,7 +8,8 @@ if exists('$TMUX') || $TERM =~ 'screen'  " FIXED for [tmux -> ssh | vim]
   " So highlighted line does go all the way across screen
   set t_ut=
   function! s:wrap(s)
-    return "\ePtmux;". substitute(a:s, "\e\\|\<Esc>", "\e\e", 'g') ."\e\\"
+    return "\ePtmux;". substitute(escape(a:s, ' '),
+          \ "\e\\|\<Esc>", "\e\e", 'g') ."\e\\"
   endfunction
 else
   function! s:wrap(s)
@@ -20,7 +21,7 @@ endif
 function! focau#events#auto_choose()
   if $TERM =~ '^rxvt'
     return ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
-  elseif $TERM =~ '^\%(xterm\|screen\)' || exists('$ITERM_PROFILE')
+  elseif $TERM =~ '\v^%(xterm|screen)' || exists('$ITERM_PROFILE')
     return ["\e[?1004h", "\e[?1004l"]
   endif
 
