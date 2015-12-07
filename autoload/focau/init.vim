@@ -1,10 +1,12 @@
-exe "fun! s:F0()\nsil! doau FocusGained|return''\nendf"
-exe "fun! s:F1()\nsil! doau FocusLost  |return''\nendf"
-
+" WARNING: seems like we can't use <expr> maps, because we need side-effects
+" ALT: {s: <C-g>...<C-g>, o: <Esc>, i: <C-o>, c: <C-\>e}
 function! s:map_triggers(keys)
-  for m in split('noxic', '\zs') | for i in range(2)
-    exe m.'noremap <silent><unique><expr> '.a:keys[i].' <SID>F'.i.'()'
-  endfor | endfor
+  for [a, i] in items({'FocusGained': 0, 'FocusLost': 1})
+    exe "fun! s:F".i."()\nsil! doau ".a."|return''\nendf"
+    for [ms, prf] in items({'nv': '@=', 'o': ':call ', 'ic': '<C-r>='})
+      for m in split(ms, '\zs')
+        exe m.'noremap <silent><unique> '.a:keys[i].' '.prf.'<SID>F'.i.'()<CR>'
+  endfor | endfor | endfor
 endfunction
 
 

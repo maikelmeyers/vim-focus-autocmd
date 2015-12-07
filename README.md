@@ -61,5 +61,16 @@ FocusGained in current terminal can be triggered *before* FocusLost in
 previous.
 * Q: I don't receive FocusLost/FocusGained when cursor in cmdline
 * A: You simply don't see its consequences -- because screen wasn't redrawed.
+Moreover, cmline executes mappings in sandbox (see :h sandbox), so some
+stuff inside autocmd linked to ```Focus*``` can't be executed at all.
+* Q: When in operator-peding mode and focus lost, mode is dropped to normal.
+* A: It's consequences of operator-peding mode itself. Currently I have no
+reliable way to execute function being in OP and restore OP command after that.
+* Q: In SELECT mode sometimes selected text became deleted when switching.
+* A: ```snoremap``` are unreliable. Don't use this mode as much as you can?:)
 * Q: Don't work in neovim
-* A: Wait for neovim v0.2 where ```t_ti/te``` must be repaired
+* A: Wait for neovim v0.2 where ```t_ti/te``` must be repaired. Currently
+neovim is detached from terminal and there no way to send sequences directly.
+
+*If someone knows way to cure one of problems described in this FAQ, feel free
+to create issue with mitigation and I'll gladly improve this plugin*
