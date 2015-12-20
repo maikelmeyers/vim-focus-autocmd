@@ -21,7 +21,7 @@ endif
 function! focau#events#auto_choose()
   if $TERM =~ '^rxvt'
     return ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
-  elseif $TERM =~ '\v^%(xterm|screen)' || exists('$ITERM_PROFILE')
+  elseif $TERM =~ '\v^%(xterm|st|screen)' || exists('$ITERM_PROFILE')
     return ["\e[?1004h", "\e[?1004l"]
   endif
 

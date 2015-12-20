@@ -4,7 +4,7 @@ function! focau#cursor#auto_shape()
   " [5,6] -> [blinking,solid] vbar/I-beam (only in xterm > 282),
   "     urxvt got I-beam only in v9.21 2014-12-31, build from recent git.
 
-  if $TERM =~ '\v^%(rxvt|screen|nvim)'
+  if $TERM =~ '\v^%(rxvt|st|screen|nvim)'
     return ["\e[2 q", "\e[6 q", "\e[4 q"]
 
     "" DISABLED: to reduce startup time, and it will not work through ssh
@@ -26,7 +26,7 @@ endfunction
 
 
 function! focau#cursor#auto_color(idx)
-  if $TERM =~ '\v^%(xterm|screen|rxvt)'
+  if $TERM =~ '\v^%(xterm|st|screen|rxvt)'
     let colors = [ "\e]12;". g:focau.colors[0] ."\x7",
                  \ "\e]12;". g:focau.colors[1] ."\x7" ]
   else
