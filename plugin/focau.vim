@@ -25,7 +25,7 @@ let g:focau = extend({
 
 
 " NOTE: gvim and nvim>v0.1.1 (for XTerm, Konsole) works as is.
-if !has('gui_running') && (!has('nvim') || $TERM =~ '^rxvt')
+if !has('gui_running') && (!has('nvim') || $TERM =~? '^rxvt')
   call focau#init#main()
 
   command! -bar -bang -nargs=0 FocusAutocmdEnable

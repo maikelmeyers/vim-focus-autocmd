@@ -1,38 +1,41 @@
 function! focau#cursor#auto_shape()
+  if $TERM =~? '\v^%(dumb|linux)'
+    " echom "Shape escape codes: can't autodetect for $TERM=" . $TERM
+    return ['', '', '']
+  elseif $TERM =~? '^konsole' || exists('$ITERM_PROFILE')
+    return ["\e]50;CursorShape=0\x7", "\e]50;CursorShape=1\x7", "\e]50;CursorShape=2\x7"]
+  endif
+
+  "" DISABLED: to reduce startup time, and it will not work through ssh
+  " let uver = eval(substitute(system('urxvt -h 2>&1'),
+  "       \ '\v.*v(\d+)\.(\d+).*', '\1+\2.0/100', ''))
+  " return ["\e[2 q", (l:uver<9.21? "\e[4 q": "\e[6 q"), "\e[4 q"]
+  " let l:uver = substitute(split(system('urxvt -help 2>&1'), '\n')[0],
+  "       \ '.*v\([0-9.]\+\).*', '\1', '')
+  " return ["\e[2 q", (9.21 <= l:uver ? "\e[6 q" : "\e[4 q")]
+
   " [1,2] -> [blinking,solid] block
   " [3,4] -> [blinking,solid] underscore
   " [5,6] -> [blinking,solid] vbar/I-beam (only in xterm > 282),
   "     urxvt got I-beam only in v9.21 2014-12-31, build from recent git.
 
-  if $TERM =~ '\v^%(rxvt|st|screen|tmux|nvim)'
-    return ["\e[2 q", "\e[6 q", "\e[4 q"]
-
-    "" DISABLED: to reduce startup time, and it will not work through ssh
-    " let uver = eval(substitute(system('urxvt -h 2>&1'),
-    "       \ '\v.*v(\d+)\.(\d+).*', '\1+\2.0/100', ''))
-    " return ["\e[2 q", (l:uver<9.21? "\e[4 q": "\e[6 q"), "\e[4 q"]
-    " let l:uver = substitute(split(system('urxvt -help 2>&1'), '\n')[0],
-    "       \ '.*v\([0-9.]\+\).*', '\1', '')
-    " return ["\e[2 q", (9.21 <= l:uver ? "\e[6 q" : "\e[4 q")]
-
-  elseif $TERM =~ '^xterm'
-    return ["\e[2 q", "\e[6 q", '']
-  elseif $TERM =~ '^Konsole' || exists('$ITERM_PROFILE')
-    return ["\e]50;CursorShape=0\x7", "\e]50;CursorShape=1\x7", '']
-  endif
-  echom "Shape escape codes: can't autodetect for $TERM=" . $TERM
-  return ['', '', '']
+  " if $TERM =~? '\v^%(xterm|rxvt|st|screen|tmux|nvim)'
+  " NOTE:(old xterm) ["\e[2 q", "\e[6 q", '']
+  return ["\e[2 q", "\e[6 q", "\e[4 q"]
 endfunction
 
 
 function! focau#cursor#auto_color(idx)
-  if $TERM =~ '\v^%(xterm|st|screen|tmux|rxvt)'
+  " SEE: http://stackoverflow.com/questions/11494029/how-do-i-change-the-color-of-current-cursor-position-indicator
+  if !g:focau.auto
+    let colors = g:focau.colors
+  elseif $TERM =~? '\v^%(xterm|st|screen|tmux|rxvt)'
+    "" ALT: ["\e]12;white\x9c", "\e]12;orange\x9c"]
+    " use default \003]12;gray\007 for gnome-terminal
     let colors = [ "\e]12;". g:focau.colors[0] ."\x7",
                  \ "\e]12;". g:focau.colors[1] ."\x7" ]
   else
-    "" ALT: ["\e]12;white\x9c", "\e]12;orange\x9c"]
-    " use default \003]12;gray\007 for gnome-terminal
-    echom "Err: can't detect escape codes for cursor colors in $TERM=" . $TERM
+    " echom "Err: can't detect esc codes for cursor colors in $TERM=".$TERM
     let colors = ['', '']
   endif
   return l:colors[a:idx]

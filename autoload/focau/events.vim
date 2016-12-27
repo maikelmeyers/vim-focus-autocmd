@@ -3,7 +3,7 @@
 " WARNING: must be outside this 'if' in s:focau_modes_enable, as it will not
 " work in tmux on_disable!
 
-if exists('$TMUX') || $TERM =~ 'screen\|tmux'  " FIXED for [tmux -> ssh | vim]
+if exists('$TMUX') || $TERM =~? 'screen\|tmux'  " FIXED for [tmux -> ssh | vim]
   " Disable bkgd color erase and don't truncate highlighting
   " So highlighted line does go all the way across screen
   set t_ut=
@@ -19,15 +19,15 @@ endif
 
 
 function! focau#events#auto_choose()
-  if $TERM =~ '^rxvt'
+  " if $TERM =~? '\v^%(dumb|linux)'
+  " echom "Err: your terminal don't support focus events $TERM=" . $TERM
+  " echom "Err: Can't auto-derive termfocus codes for your $TERM=" . $TERM
+  " echom "Disabled. If you disagree, set escape codes by yourself:)"
+  if $TERM =~? '^rxvt'
     return ["\e]777;focus;on\x7", "\e]777;focus;off\x7"]
-  elseif $TERM =~ '\v^%(xterm|st|screen|tmux)' || exists('$ITERM_PROFILE')
-    return ["\e[?1004h", "\e[?1004l"]
   endif
-
-  echom "Err: Can't auto-derive termfocus codes for your $TERM. Disabled."
-  echom "If you disagree, set escape codes by yourself:)"
-  return ['', '']
+  " if $TERM =~? '\v^%(xterm|st|screen|tmux)' || exists('$ITERM_PROFILE')
+  return ["\e[?1004h", "\e[?1004l"]
 endfunction
 
 
