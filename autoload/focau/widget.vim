@@ -29,11 +29,17 @@ function! focau#widget#clipboard()
   call s:CopyClosure('FocusLost',   1)
 endfunction
 
+function! BufDo(command)
+  let currBuff=bufnr("%")
+  execute 'bufdo ' . a:command
+  execute 'buffer ' . currBuff
+endfunction
 
 " Reload all changed, save all unchanged
 function! focau#widget#buffers()
   augroup focau
-    au FocusGained * bufdo checktime
-    au FocusLost   * bufdo update!
+    au FocusGained * : call BufDo('checktime')
+    " au FocusLost   *: call BufDo('update!')
   augroup END
 endfunction
+
