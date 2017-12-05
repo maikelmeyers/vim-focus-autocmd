@@ -21,7 +21,7 @@ function! focau#cursor#auto_shape()
 
   " if $TERM =~? '\v^%(xterm|rxvt|st|screen|tmux|nvim)'
   " NOTE:(old xterm) ["\e[2 q", "\e[6 q", '']
-  return ["\e[2 q", "\e[6 q", "\e[4 q"]
+  return ["\e[1 q", "\e[5 q", "\e[3 q"]
 endfunction
 
 
@@ -33,7 +33,8 @@ function! focau#cursor#auto_color(idx)
     "" ALT: ["\e]12;white\x9c", "\e]12;orange\x9c"]
     " use default \003]12;gray\007 for gnome-terminal
     let colors = [ "\e]12;". g:focau.colors[0] ."\x7",
-                 \ "\e]12;". g:focau.colors[1] ."\x7" ]
+                 \ "\e]12;". g:focau.colors[1] ."\x7",
+                 \ "\e]12;". g:focau.colors[2] ."\x7" ]
   else
     " echom "Err: can't detect esc codes for cursor colors in $TERM=".$TERM
     let colors = ['', '']
@@ -49,6 +50,6 @@ function! focau#cursor#shape_preserve()
   " BUG: has no effect on restoring color after exit.
   "" There are sequence to change color, but not the one to restore to default
   " SEE Maybe save/restore the screen -- works for cursor? -- seems NO.
-  au focau VimLeave * let &t_SI = s:old_SI | let &t_EI = s:old_EI
-      \| if exists('&t_SR') | let &t_SR = s:old_RS | endif
+  " au focau VimLeave * let &t_SI = s:old_SI . "\e]12;white\x7" | let &t_EI = s:old_EI . "\e]12;white\x7" 
+      " \| if exists('&t_SR') | let &t_SR = s:old_RS . "\e]12;white\x7"  | endif
 endfunction

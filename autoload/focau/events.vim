@@ -46,10 +46,10 @@ function! focau#events#enable(state)
   " exec 'silent !echo -ne "'. g:focau.focuses[1] .g:focau.screens[1] .'"'
 
   "" FIX: add two color groups based on language, not permanent. See xkb.
-  let color = focau#cursor#auto_color(0)
   let codes = ['t_EI', 't_SI', 't_SR']
   " Install insert mode autohooks -- on enter/leave
   for i in range(3)| if exists('&'.codes[i])
+    let color = focau#cursor#auto_color(i)
     exe 'set '.codes[i].'='.s:wrap(g:focau.cursors[i] . l:color)
   endif | endfor
 

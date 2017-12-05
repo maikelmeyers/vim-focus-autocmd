@@ -1,0 +1,31 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	0.0.0	/157918c6/
+BufDo	autoload/focau/widget.vim	/^function! BufDo(command)$/;"	f
+FocusAutocmdEnable	plugin/focau.vim	/^  command! -bar -bang -nargs=0 FocusAutocmdEnable$/;"	c
+FocusAutocmdToggle	plugin/focau.vim	/^  command! -bar -bang -nargs=0 FocusAutocmdToggle$/;"	c
+focau	autoload/focau/init.vim	/^  augroup focau$/;"	a
+focau	autoload/focau/widget.vim	/^  augroup focau$/;"	a
+focau#cursor#auto_color	autoload/focau/cursor.vim	/^function! focau#cursor#auto_color(idx)$/;"	f
+focau#cursor#auto_shape	autoload/focau/cursor.vim	/^function! focau#cursor#auto_shape()$/;"	f
+focau#cursor#shape_preserve	autoload/focau/cursor.vim	/^function! focau#cursor#shape_preserve()$/;"	f
+focau#events#auto_choose	autoload/focau/events.vim	/^function! focau#events#auto_choose()$/;"	f
+focau#events#enable	autoload/focau/events.vim	/^function! focau#events#enable(state)$/;"	f
+focau#init#main	autoload/focau/init.vim	/^function! focau#init#main()$/;"	f
+focau#widget#buffers	autoload/focau/widget.vim	/^function! focau#widget#buffers()$/;"	f
+focau#widget#clipboard	autoload/focau/widget.vim	/^function! focau#widget#clipboard()$/;"	f
+focau#widget#number	autoload/focau/widget.vim	/^function! focau#widget#number()$/;"	f
+g:focau	autoload/focau/events.vim	/^  let g:focau.active = a:state$/;"	v
+g:focau	autoload/focau/init.vim	/^    let g:focau.cursors = focau#cursor#auto_shape()$/;"	v
+g:focau	autoload/focau/init.vim	/^    let g:focau.focuses = focau#events#auto_choose()$/;"	v
+g:focau	plugin/focau.vim	/^let g:focau = extend({$/;"	v
+g:loaded_focau	plugin/focau.vim	/^let g:loaded_focau = 1$/;"	v
+s:CopyClosure	autoload/focau/widget.vim	/^  function! s:CopyClosure(au, idx)$/;"	f
+s:CopyReg	autoload/focau/widget.vim	/^  function! s:CopyReg(src, dst, ...)$/;"	f
+s:map_triggers	autoload/focau/init.vim	/^function! s:map_triggers(e)$/;"	f
+s:save_cpo	plugin/focau.vim	/^let s:save_cpo = &cpo$/;"	v
+s:wrap	autoload/focau/events.vim	/^  function! s:wrap(s)$/;"	f

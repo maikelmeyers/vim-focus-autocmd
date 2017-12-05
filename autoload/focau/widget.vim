@@ -30,9 +30,12 @@ function! focau#widget#clipboard()
 endfunction
 
 function! BufDo(command)
-  let currBuff=bufnr("%")
+  " let currBuff=bufnr("%")
+  " execute "normal! gg/foo\<cr>dd"
+  let b:winview = winsaveview()
   execute 'bufdo ' . a:command
-  execute 'buffer ' . currBuff
+  " execute 'buffer ' . currBuff
+  if(exists('b:winview')) | call winrestview(b:winview) | endif
 endfunction
 
 " Reload all changed, save all unchanged

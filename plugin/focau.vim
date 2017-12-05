@@ -17,7 +17,7 @@ let g:focau = extend({
   \ 'focuses': ["\e[?1004h", "\e[?1004l"],
   \ 'screens': ["\e[?1049h", "\e[?1049l"],
   \ 'cursors': ['', '', ''],
-  \ 'colors' : ['white', 'cyan'],
+  \ 'colors' : ['white', 'orange', 'orange'],
   \ 'widgets': [],
   \ 'clipregs':['+"p', '"+'],
   \}, get(g:, 'focau', {}))
